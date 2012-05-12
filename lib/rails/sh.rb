@@ -8,6 +8,8 @@ require 'rails/sh/bundler'
 
 module Rails
   module Sh
+    HISTFILE = File.expand_path('~/.railssh_history')
+
     class << self
       def start
         ::Rails::Sh::Rails.init
@@ -20,6 +22,7 @@ module Rails
         puts "\e[36mRails.env: #{::Rails.env}\e[0m"
         puts "\e[36mtype `help` to print help\e[0m"
 
+        load_history
         setup_readline
         while buf = Readline.readline(prompt, true)
           line = buf.strip
@@ -33,6 +36,7 @@ module Rails
           end
           setup_readline
         end
+        save_history
       end
 
       def prompt
@@ -52,6 +56,20 @@ module Rails
           puts "\e[34m#{Time.now - start}sec\e[0m"
         else
           puts "\e[41mCommand not found\e[0m"
+        end
+      end
+
+      def load_history
+        if File.exist?(::Rails::Sh::HISTFILE)
+          open(::Rails::Sh::HISTFILE) do |f|
+            f.each { |l| Readline::HISTORY << l.chomp }
+          end
+        end
+      end
+
+      def save_history
+        open(::Rails::Sh::HISTFILE, 'w') do |f|
+          f.puts Readline::HISTORY.to_a.uniq
         end
       end
     end
