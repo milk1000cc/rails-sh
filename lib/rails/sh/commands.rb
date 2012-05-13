@@ -76,5 +76,6 @@ end
 Command.completions += %w(development test production).map { |i| "log #{i}" }
 
 Command.define 'exit' do
+  Rails::Sh.save_history
   exit
 end
