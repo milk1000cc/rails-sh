@@ -60,6 +60,7 @@ Command.define 'eval' do |arg|
 end
 
 Command.define 'restart' do
+  Rails::Sh.save_history
   puts 'restarting...'
   exec File.expand_path('../../../../bin/rails-sh', __FILE__)
 end
